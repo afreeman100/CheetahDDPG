@@ -29,29 +29,9 @@ class Agent:
         self.save_directory = './model/model.ckpt'
 
 
-    def load_and_play(self):
-
-        with tf.Session() as sess:
-
-            actor = ActorNetwork(sess, self.actor_a, self.tau, self.batch_size, self.state_dimensions, self.action_dimensions,
-                                 self.action_bounds)
-            critic = CriticNetwork(sess, self.critic_a, self.tau, self.state_dimensions, self.action_dimensions)
-            actor_noise = Noise(mu=np.zeros(self.action_dimensions))
-
-            sess.run(tf.global_variables_initializer())
-            tf.train.Saver().restore(sess, self.save_directory)
-
-            state = self.env.reset()
-            while True:
-                self.env.render()
-                action = sess.run(actor.scaled_out,
-                                  feed_dict={actor.inputs: np.reshape(state, (1, self.state_dimensions))}) + actor_noise.get_noise()
-                state, reward, done, _ = self.env.step(action[0])
-                if done:
-                    break
-
-
     def train(self, episodes, render=False, verbose=False):
+
+        interaction_counter = 0
 
         with tf.Session() as sess:
 
@@ -89,6 +69,7 @@ class Agent:
                                            np.reshape(action, (self.action_dimensions,)),
                                            reward, done,
                                            np.reshape(next_state, (self.state_dimensions,)))
+                    interaction_counter += 1
 
                     # Only begin training when there are sufficient experiences in replay memory
                     if self.replay_memory.size() > self.batch_size:
@@ -137,4 +118,4 @@ class Agent:
 
                         break
 
-        return episode_rewards
+        return episode_rewards, interaction_counter
