@@ -64,7 +64,7 @@ class Noise:
 def plot(episode_rewards, title):
     episodes = np.arange(len(episode_rewards)) + 1
 
-    plt.plot(episodes, episode_rewards, label='DDPG')
+    plt.plot(episodes, episode_rewards, color='green', label='DDPG')
     plt.xlabel('Episode')
     plt.ylabel('Episode Return')
     plt.title(title)
