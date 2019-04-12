@@ -4,15 +4,14 @@ from utils import plot, moving_average
 import scipy.stats
 
 # Number of agents to use, and how many episodes to train them for
-num_agents = 1
-num_episodes = 25
+num_agents = 5
+num_episodes = 1000
 
 episode_rewards = np.zeros([num_agents, num_episodes])
 # Train each agent
 for i in range(num_agents):
-    agent = Agent()
+    agent = Agent(reward_scale=0.1)
     episode_rewards[i], interactions = agent.train(num_episodes)
-    # print(episode_rewards[i, -1], 'return after', interactions, 'total interactions')
 
 # Mean reward and standard error per episode
 mean_reward = np.mean(episode_rewards, axis=0)

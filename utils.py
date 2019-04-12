@@ -61,7 +61,7 @@ class Noise:
         return x
 
 
-def moving_average(returns, n=10):
+def moving_average(returns, n=5):
     av = np.zeros_like(returns)
     for i in range(len(returns)):
         window = range(max(i - n + 1, 0), min(i + n + 1, len(returns)))
