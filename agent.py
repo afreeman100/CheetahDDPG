@@ -30,11 +30,9 @@ class Agent:
 
 
     def train(self, episodes, render=False, verbose=False):
-
         interaction_counter = 0
 
         with tf.Session() as sess:
-
             actor = Actor(sess, self.actor_a, self.tau, self.batch_size, self.state_dimensions, self.action_dimensions,
                           self.action_bounds)
             critic = Critic(sess, self.critic_a, self.tau, self.state_dimensions, self.action_dimensions)

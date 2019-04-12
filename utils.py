@@ -61,6 +61,14 @@ class Noise:
         return x
 
 
+def moving_average(returns, n=10):
+    av = np.zeros_like(returns)
+    for i in range(len(returns)):
+        window = range(max(i - n + 1, 0), min(i + n + 1, len(returns)))
+        av[i] = np.sum(returns[window]) / len(window)
+    return av
+
+
 def plot(episode_rewards, episode_errors, num_agents):
     episodes = np.arange(len(episode_rewards)) + 1
 
