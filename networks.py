@@ -2,9 +2,9 @@ import tensorflow as tf
 import tflearn
 
 
-class ActorNetwork:
+class Actor:
 
-    def __init__(self, sess, actor_a, tau, batch_size, state_dimensions, action_dimensions, action_bounds):
+    def __init__(self, sess, actor_a, tau, batch_size, state_dimensions, action_dimensions, action_bounds, nodes=(400, 300)):
         self.sess = sess
         self.state_dimensions = state_dimensions
         self.action_dimensions = action_dimensions
@@ -14,8 +14,17 @@ class ActorNetwork:
         # ---------- Actor Network ----------
         with tf.variable_scope('Actor'):
             self.inputs = tf.placeholder(tf.float32, [None, state_dimensions])
-            layer = tf.layers.dense(self.inputs, 400, activation=tf.nn.relu)
-            layer = tf.layers.dense(layer, 300, activation=tf.nn.relu)
+
+            # FC layer 1 with batch normalization before activation function
+            layer = tf.layers.dense(self.inputs, nodes[0])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
+
+            # FC layer 2
+            layer = tf.layers.dense(layer, nodes[1])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
+
             self.out = tf.layers.dense(layer, action_dimensions, activation=tf.tanh,
                                        kernel_initializer=tf.initializers.random_uniform(-0.003, 0.003))
             self.scaled_out = self.out * action_bounds
@@ -23,8 +32,15 @@ class ActorNetwork:
         # ---------- Target Actor ----------
         with tf.variable_scope('Target_Actor'):
             self.target_inputs = tf.placeholder(tf.float32, [None, state_dimensions])
-            layer = tf.layers.dense(self.target_inputs, 400, activation=tf.nn.relu)
-            layer = tf.layers.dense(layer, 300, activation=tf.nn.relu)
+
+            layer = tf.layers.dense(self.target_inputs, nodes[0])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
+
+            layer = tf.layers.dense(layer, nodes[1])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
+
             self.target_out = tf.layers.dense(layer, action_dimensions, activation=tf.tanh,
                                               kernel_initializer=tf.initializers.random_uniform(-0.003, 0.003))
             self.target_scaled_out = self.target_out * action_bounds
@@ -47,9 +63,9 @@ class ActorNetwork:
         self.optimize = tf.train.AdamOptimizer(actor_a).apply_gradients(zip(gradient, actor_parameters))
 
 
-class CriticNetwork:
+class Critic:
 
-    def __init__(self, sess, critic_a, tau, state_dimensions, action_dimensions):
+    def __init__(self, sess, critic_a, tau, state_dimensions, action_dimensions, nodes=(400, 300)):
         self.sess = sess
         self.state_dimensions = state_dimensions
         self.action_dimensions = action_dimensions
@@ -59,11 +75,14 @@ class CriticNetwork:
         with tf.variable_scope('Critic'):
             self.inputs = tf.placeholder(tf.float32, [None, self.state_dimensions])
             self.action = tf.placeholder(tf.float32, [None, self.action_dimensions])
-            layer = tf.layers.dense(self.inputs, 400, activation=tf.nn.relu)
+
+            layer = tf.layers.dense(self.inputs, nodes[0])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
 
             # Combine action into second layer
-            temp1 = tflearn.fully_connected(layer, 300)
-            temp2 = tflearn.fully_connected(self.action, 300)
+            temp1 = tflearn.fully_connected(layer, nodes[1])
+            temp2 = tflearn.fully_connected(self.action, nodes[1])
             layer = tf.nn.relu(tf.matmul(layer, temp1.W) + tf.matmul(self.action, temp2.W) + temp2.b)
 
             self.out = tf.layers.dense(layer, 1, kernel_initializer=tf.initializers.random_uniform(-0.003, 0.003))
@@ -72,11 +91,14 @@ class CriticNetwork:
         with tf.variable_scope('Target_Critic'):
             self.target_inputs = tf.placeholder(tf.float32, [None, self.state_dimensions])
             self.target_action = tf.placeholder(tf.float32, [None, self.action_dimensions])
-            layer = tf.layers.dense(self.target_inputs, 400, activation=tf.nn.relu)
+
+            layer = tf.layers.dense(self.target_inputs, nodes[0])
+            layer = tflearn.layers.normalization.batch_normalization(layer)
+            layer = tf.nn.relu(layer)
 
             # Combine action into second layer
-            temp1 = tflearn.fully_connected(layer, 300)
-            temp2 = tflearn.fully_connected(self.target_action, 300)
+            temp1 = tflearn.fully_connected(layer, nodes[1])
+            temp2 = tflearn.fully_connected(self.target_action, nodes[1])
             layer = tf.nn.relu(tf.matmul(layer, temp1.W) + tf.matmul(self.target_action, temp2.W) + temp2.b)
 
             self.target_out = tf.layers.dense(layer, 1, kernel_initializer=tf.initializers.random_uniform(-0.003, 0.003))

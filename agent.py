@@ -3,7 +3,7 @@ import numpy as np
 import gym
 from tqdm import tqdm
 from utils import ReplayBuffer, Noise
-from networks import ActorNetwork, CriticNetwork
+from networks import Actor, Critic
 
 
 class Agent:
@@ -35,9 +35,9 @@ class Agent:
 
         with tf.Session() as sess:
 
-            actor = ActorNetwork(sess, self.actor_a, self.tau, self.batch_size, self.state_dimensions, self.action_dimensions,
-                                 self.action_bounds)
-            critic = CriticNetwork(sess, self.critic_a, self.tau, self.state_dimensions, self.action_dimensions)
+            actor = Actor(sess, self.actor_a, self.tau, self.batch_size, self.state_dimensions, self.action_dimensions,
+                          self.action_bounds)
+            critic = Critic(sess, self.critic_a, self.tau, self.state_dimensions, self.action_dimensions)
 
             actor_noise = Noise(mu=np.zeros(self.action_dimensions))
             sess.run(tf.global_variables_initializer())

@@ -45,7 +45,7 @@ class Noise:
     """
 
 
-    def __init__(self, mu, sigma=0.3, theta=0.15, dt=1e-2, x0=None):
+    def __init__(self, mu, sigma=0.2, theta=0.15, dt=0.01, x0=None):
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
@@ -61,12 +61,15 @@ class Noise:
         return x
 
 
-def plot(episode_rewards, title):
+def plot(episode_rewards, episode_errors, num_agents):
     episodes = np.arange(len(episode_rewards)) + 1
 
     plt.plot(episodes, episode_rewards, color='green', label='DDPG')
+    plt.fill_between(episodes, episode_rewards - episode_errors, episode_rewards + episode_errors, alpha=0.3, color='green')
+
     plt.xlabel('Episode')
-    plt.ylabel('Episode Return')
-    plt.title(title)
+    plt.ylabel('Average Return')
+    # title = 'Return per episode, averaged over ' + str(num_agents) + ' agents'
+    # plt.title(title)
     plt.legend()
     plt.show()
