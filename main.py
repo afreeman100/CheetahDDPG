@@ -10,7 +10,7 @@ num_episodes = 1000
 episode_rewards = np.zeros([num_agents, num_episodes])
 # Train each agent
 for i in range(num_agents):
-    agent = Agent(reward_scale=0.1)
+    agent = Agent()
     episode_rewards[i], interactions = agent.train(num_episodes)
 
 # Mean reward and standard error per episode
