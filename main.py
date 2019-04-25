@@ -29,7 +29,7 @@ def train_and_save(num_episodes):
     agent = Agent()
     episode_rewards, interactions = agent.train(num_episodes)
 
-    with open('agent10.pkl', 'wb') as f:
+    with open('agent1.pkl', 'wb') as f:
         pickle.dump(episode_rewards, f)
 
 
