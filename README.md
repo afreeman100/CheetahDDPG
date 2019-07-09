@@ -6,7 +6,6 @@ The video below shows how the behaviour of the agent changes as traning continue
 ![Training video](training_video.gif)
 
 
+[HalfCheetah Environment](https://gym.openai.com/envs/HalfCheetah-v2/)
 
-Environment: https://gym.openai.com/envs/HalfCheetah-v2/
-
-Original paper: https://arxiv.org/pdf/1509.02971.pdf
+[Original DDPG paper](https://arxiv.org/pdf/1509.02971.pdf)
