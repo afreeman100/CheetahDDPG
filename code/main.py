@@ -53,5 +53,5 @@ def load_and_draw(num_episodes, num_agents):
     print('Mean reward from last 100 episodes', np.mean(mean_reward[-100:]))
 
 
-# train_and_save(num_episodes=2000)
-load_and_draw(num_agents=5, num_episodes=2000)
+train_and_save(num_episodes=2000)
+# load_and_draw(num_agents=5, num_episodes=2000)
